@@ -38,8 +38,8 @@ def home():
 
 
 @app.get("/displayPage")
-def displayPage():
-    url = "https://www.investing.com/indices/world-indices"
+def displayPage(url: str):
+    # url = "https://www.investing.com/indices/world-indices"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
     }
