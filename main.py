@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 from fastapi.responses import HTMLResponse
 from bs4 import BeautifulSoup
@@ -7,6 +8,27 @@ from majorIndices import router as indices_routes
 
 
 app = FastAPI()
+
+
+app = FastAPI()
+
+# ✅ Allow your frontend domains (Render frontend URL, localhost, etc.)
+origins = [
+    "http://localhost:5173",   # React/Vite local
+    "http://localhost:4200",   # Angular local
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:4200",
+    "https://global-market-api.onrender.com/"  # Render deployed frontend
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # You can also use ["*"] for testing
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(indices_routes)
 
 
