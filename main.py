@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse
 from bs4 import BeautifulSoup
 
 from majorIndices import router as indices_routes
+from stocks import stocksRouter as stock_routers
 
 
 app = FastAPI()
@@ -30,6 +31,7 @@ app.add_middleware(
 )
 
 app.include_router(indices_routes)
+app.include_router(stock_routers)
 
 
 @app.get("/")
