@@ -1,12 +1,13 @@
 from fastapi import APIRouter
 import common
+import requests
 
 stocksRouter = APIRouter(tags=["Stocks"])
 
 BASE_PATH = "https://finance.yahoo.com/markets/"
 
 
-@stocksRouter.get("/stocks/most-active")
+@stocksRouter.get("/stocks/most-active-old")
 def stocksMostActive():
     htmlResponse = common.getContentFromUrl(f"{BASE_PATH}stocks/most-active/")
     divContainer = htmlResponse.find("div", class_="table-container")
@@ -123,3 +124,65 @@ def stocksTrending():
             result.append(row_obj)
 
     return {"success": "true", "message": "Top Gainers Stocks fetched successfully", "data": result}
+
+
+def getStockUrl(urlParam: str):
+    url = ""
+    match urlParam:
+        case "trending-now":
+            url = "trending/"
+        case "top-gainers":
+            url = "gainers/?start=0&count=50"
+        case "top-losers":
+            url = "losers/?start=0&count=50"
+        case _:
+            url = urlParam + "/?start=0&count=50"
+
+    return url
+
+
+@stocksRouter.get("/stocks/{url}")
+def allStockData(url: str):
+    fullUrl = f"{BASE_PATH}stocks/{getStockUrl(url)}"
+    print(fullUrl)
+
+    try:
+        htmlResponse = common.getContentFromUrl(fullUrl)
+        divContainer = htmlResponse.find("div", class_="table-container")
+        if not divContainer:
+            return {"success": "false", "message": "Problem occurred while fetching Data", "data": []}
+        tables = htmlResponse.find("table")
+        if not tables:
+            return {"success": "false", "message": "Problem occurred while fetching Data", "data": []}
+
+        result = []
+
+        # get headers from th
+        headers = []
+        for th in tables.find_all("th"):
+            text = th.get_text(strip=True)
+            if text:
+                headers.append(text)
+        print("headers", headers)
+
+        # loop tr and map td with headers
+        for tr in tables.find_all("tr"):
+            tds = tr.find_all("td")
+
+            if tds:
+                row_obj = {}
+                headerId = 0
+                for i, td in enumerate(tds):
+                    value = td.get_text(strip=True)
+                    if value:   # match header safely
+                        row_obj[headers[headerId]] = td.find(
+                            "span").get_text(strip=True) if i == 3 else value
+                        headerId = headerId + 1
+                    else:
+                        continue
+
+                result.append(row_obj)
+
+        return {"success": "true", "message": "Data fetched successfully", "data": result}
+    except requests.exceptions.RequestException as e:
+        return {"error": str(e)}
