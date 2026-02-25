@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 import common
 import requests
+from typing import Literal
 
 stocksRouter = APIRouter(tags=["Stocks"])
 
@@ -142,7 +143,12 @@ def getStockUrl(urlParam: str):
 
 
 @stocksRouter.get("/stocks/{url}")
-def allStockData(url: str):
+def allStockData(
+    url: str,
+    sort: str | None = None,
+    limit: int | None = None,
+    order: Literal["asc", "desc"] = "desc",
+):
     fullUrl = f"{BASE_PATH}stocks/{getStockUrl(url)}"
     print(fullUrl)
 
@@ -183,6 +189,28 @@ def allStockData(url: str):
 
                 result.append(row_obj)
 
-        return {"success": "true", "message": "Data fetched successfully", "data": result}
+        finalResult = result.copy()
+
+        # ✅ Case-insensitive sort
+        if sort and result:
+
+            # Convert all keys to lowercase map
+            valid_keys = {key.lower(): key for key in finalResult[0].keys()}
+
+            # Convert user input to lowercase
+            sort_lower = sort.lower()
+
+            if sort_lower in valid_keys:
+                actual_key = valid_keys[sort_lower]
+
+                reverse = True if order == "desc" else False
+                finalResult = sorted(
+                    finalResult, key=lambda x: x[actual_key], reverse=reverse)
+
+        # ✅ Apply limit if provided
+        if limit:
+            finalResult = finalResult[:limit]
+
+        return {"success": "true", "message": "Data fetched successfully", "data": finalResult}
     except requests.exceptions.RequestException as e:
         return {"error": str(e)}
