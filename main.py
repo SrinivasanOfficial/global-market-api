@@ -36,7 +36,7 @@ app.include_router(stock_routers)
 
 @app.get("/")
 def home():
-    return "welcome to Home page"
+    return {"welcome to Home page"}
 
 
 @app.get("/displayPage")
