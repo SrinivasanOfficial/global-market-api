@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 from majorIndices import router as indices_routes
 from stocks import stocksRouter as stock_routers
+from markets import marketsRouter as markets_routes
 
 
 app = FastAPI()
@@ -32,6 +33,7 @@ app.add_middleware(
 
 app.include_router(indices_routes)
 app.include_router(stock_routers)
+app.include_router(markets_routes)
 
 
 @app.get("/")
