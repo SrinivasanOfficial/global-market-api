@@ -131,7 +131,7 @@ def getStockUrl(urlParam: str):
     url = ""
     match urlParam:
         case "most-active":
-            url = "most-active/"
+            url = "most-active/?start=0&count=50"
         case "trending-now":
             url = "trending/"
         case "top-gainers":
@@ -191,6 +191,23 @@ def allStockData(
 
                 result.append(row_obj)
 
+        for val in result:
+            if 'Price' in val:
+                priceVal = val['Price']
+                val['Price'] = float(priceVal)
+            if 'Change' in val:
+                priceVal = val['Change']
+                val['Change'] = float(priceVal)
+            if 'Change %' in val:
+                priceVal = val['Change %'].replace("%", "").strip()
+                val['Change %'] = float(priceVal)
+            if 'Volume' in val:
+                priceVal = val['Volume'][:-1]
+                val['Volume'] = float(priceVal)
+            if 'Market Cap' in val:
+                priceVal = val['Market Cap'][:-1]
+                val['Market Cap'] = float(priceVal)
+
         finalResult = result.copy()
 
         # ✅ Case-insensitive sort
@@ -204,10 +221,11 @@ def allStockData(
 
             if sort_lower in valid_keys:
                 actual_key = valid_keys[sort_lower]
+                print('actual_key', actual_key)
 
                 reverse = True if order == "desc" else False
                 finalResult = sorted(
-                    finalResult, key=lambda x: x[actual_key], reverse=reverse)
+                    finalResult, key=lambda x: x[actual_key], reverse=True)
 
         # ✅ Apply limit if provided
         if limit:
