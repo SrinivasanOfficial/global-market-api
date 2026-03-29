@@ -132,8 +132,8 @@ def getStockUrl(urlParam: str):
     match urlParam:
         case "most-active":
             url = "most-active/?start=0&count=50"
-        case "trending-now":
-            url = "trending/"
+        # case "trending-now":
+            # url = "trending/"
         case "top-gainers":
             url = "gainers/?start=0&count=50"
         case "top-losers":
