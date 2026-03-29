@@ -8,7 +8,7 @@ stocksRouter = APIRouter(tags=["Stocks"])
 BASE_PATH = "https://finance.yahoo.com/markets/"
 
 
-@stocksRouter.get("/stocks/most-active-old")
+@stocksRouter.get("/stocks/most-active_bk")
 def stocksMostActive():
     htmlResponse = common.getContentFromUrl(f"{BASE_PATH}stocks/most-active/")
     divContainer = htmlResponse.find("div", class_="table-container")
@@ -49,7 +49,7 @@ def stocksMostActive():
     return {"success": "true", "message": "Most Active Stocks fetched successfully", "data": result}
 
 
-@stocksRouter.get("/stocks/trending")
+@stocksRouter.get("/stocks/trending_bk")
 def stocksTrending():
     htmlResponse = common.getContentFromUrl(f"{BASE_PATH}stocks/trending/")
     tables = htmlResponse.find("table", class_="yf-1w0dr5b bd")
@@ -88,7 +88,7 @@ def stocksTrending():
     return {"success": "true", "message": "Trending Now Stocks fetched successfully", "data": result}
 
 
-@stocksRouter.get("/stocks/top-gainers")
+@stocksRouter.get("/stocks/top-gainers_bk")
 def stocksTrending():
     htmlResponse = common.getContentFromUrl(f"{BASE_PATH}stocks/gainers/")
     tables = htmlResponse.find("table", class_="yf-1w0dr5b bd")
@@ -202,7 +202,8 @@ def allStockData(
                 priceVal = val['Change %'].replace("%", "").strip()
                 val['Change %'] = float(priceVal)
             if 'Volume' in val:
-                priceVal = val['Volume'][:-1]
+                priceVal = val['Volume'][:-
+                                         1].replace("M", "").replace(",", ".")
                 val['Volume'] = float(priceVal)
             if 'Market Cap' in val:
                 priceVal = val['Market Cap'][:-1]
