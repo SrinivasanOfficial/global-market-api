@@ -193,21 +193,30 @@ def allStockData(
 
         for val in result:
             if 'Price' in val:
-                priceVal = val['Price']
-                val['Price'] = float(priceVal)
+                priceVal = val['Price'].replace(",", "")
+                try:
+                    val['Price'] = float(priceVal)
+                except:
+                    None
             if 'Change' in val:
-                priceVal = val['Change']
-                val['Change'] = float(priceVal)
+                priceVal = val['Change'].replace(",", "")
+                try:
+                    val['Change'] = float(priceVal)
+                except:
+                    None
             if 'Change %' in val:
                 priceVal = val['Change %'].replace("%", "").strip()
-                val['Change %'] = float(priceVal)
+                try:
+                    val['Change %'] = float(priceVal)
+                except:
+                    None
             if 'Volume' in val:
                 priceVal = val['Volume'][:-
                                          1].replace("M", "").replace(",", ".")
-                val['Volume'] = float(priceVal)
-            if 'Market Cap' in val:
-                priceVal = val['Market Cap'][:-1]
-                val['Market Cap'] = float(priceVal)
+                try:
+                    val['Volume'] = float(priceVal)
+                except:
+                    None
 
         finalResult = result.copy()
 
